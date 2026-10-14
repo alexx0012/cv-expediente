@@ -1,0 +1,343 @@
+/* ============================================================
+   VARIABLES Y RESET BASE
+   El contenido del CV (light DOM) se estiliza aquí; el
+   comportamiento encapsulado vive en cada Shadow DOM.
+   ============================================================ */
+
+   @font-face {
+    font-family: "Special Elite";
+    src: url("../assets/fonts/special-elite/special-elite-latin-400-normal.woff2")
+         format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+   }
+    @font-face {
+    font-family: "Special Elite";
+    src: url("../assets/fonts/special-elite/special-elite-latin-ext-400-normal.woff2")
+         format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    unicode-range: U+0100-024F, U+0259, U+1E00-1EFF,
+                   U+2020, U+20A0-20AB, U+20AD-20C0,
+                   U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+    --fuente-criminal: 'Special Elite', monospace;
+    --color-fondo-sala: #1a1a1a;
+    --color-carpeta: #d7be95;
+    --color-papel: #f4f0e6;
+    --color-tinta: #1c1c1c;
+    --color-tinta-suave: #5a5248;
+    --color-sello: #800000;
+    --color-linea: #b9ac97;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    color-scheme: dark;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: var(--color-fondo-sala);
+    font-family: var(--fuente-criminal);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.escritorio-interrogatorio {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100vw;
+    padding: 36px 20px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(133, 94, 52, 0.42) 50%,
+            rgba(105, 70, 38, 0.24) 65%,
+            rgba(59, 38, 25, 0.08) 80%,
+            transparent 100%
+        ),
+        radial-gradient(
+            circle,
+            #30291f 0%,
+            #17130f 100%
+        );
+
+    perspective: 200px;
+    overflow: hidden;
+}
+
+/* ============================================================
+   ACCESIBILIDAD GLOBAL
+   ============================================================ */
+:focus-visible {
+    outline: 3px solid var(--color-sello);
+    outline-offset: 2px;
+}
+
+/* Título principal para lectores de pantalla y buscadores, sin alterar la estética */
+.solo-lectura {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+::selection {
+    background: var(--color-sello);
+    color: var(--color-papel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   CONTENIDO DEL DOSSIER (inyectado por slots en cada hoja)
+   ============================================================ */
+expediente-carpeta:not(:defined),
+expediente-pagina:not(:defined),
+expediente-ficha:not(:defined),
+expediente-atajos:not(:defined),
+expediente-colofon:not(:defined) {
+    visibility: hidden;
+}
+
+expediente-pagina {
+    display: block;
+    color: var(--color-tinta);
+}
+
+expediente-pagina h2 {
+    font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-tinta);
+    border-bottom: 3px double #444;
+    padding-bottom: 0.35em;
+    margin-bottom: 1.1em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+}
+
+expediente-pagina h2::before {
+    content: "§";
+    color: var(--color-sello);
+    font-size: 1.1em;
+}
+
+expediente-pagina h3 {
+    font-weight: 400;
+}
+
+/* --- Ficha de identificación --- */
+.cv-nombre {
+    font-size: clamp(1.25rem, 3vw, 1.9rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.15;
+    margin-bottom: 0.35em;
+}
+
+.cv-rol {
+    color: var(--color-tinta-suave);
+    font-size: clamp(0.8rem, 1.7vw, 1rem);
+    line-height: 1.5;
+    max-width: 45ch;
+}
+
+.cv-contacto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    font-style: normal;
+    font-size: clamp(0.75rem, 1.5vw, 0.92rem);
+    margin-top: 1.2em;
+    padding-top: 0.9em;
+    border-top: 1px dashed var(--color-linea);
+}
+
+.cv-contacto a {
+    color: var(--color-tinta);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    width: fit-content;
+    border-radius: 2px;
+}
+
+.cv-contacto a:hover {
+    color: var(--color-sello);
+}
+
+.cv-contacto a:focus-visible {
+    outline: 2px solid var(--color-sello);
+    outline-offset: 2px;
+}
+
+/* --- Bloques de sección (experiencia, formación, etc.) --- */
+.cv-seccion + .cv-seccion {
+    margin-top: 1.6em;
+    padding-top: 1.2em;
+    border-top: 1px dashed var(--color-linea);
+}
+
+.cv-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+    flex-wrap: wrap;
+    margin-bottom: 0.3em;
+}
+
+.cv-cabecera h3 {
+    font-size: clamp(0.95rem, 1.9vw, 1.2rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.cv-fecha {
+    flex-shrink: 0;
+    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+    letter-spacing: 0.08em;
+    color: var(--color-sello);
+    border: 1px dashed var(--color-sello);
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+.cv-puesto {
+    font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+    color: var(--color-tinta-suave);
+    margin-bottom: 0.7em;
+}
+
+.cv-lista {
+    list-style: none;
+    font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+    line-height: 1.55;
+}
+
+.cv-lista li {
+    position: relative;
+    padding-left: 1.5em;
+    margin-bottom: 0.4em;
+}
+.cv-lista a {
+    color: var(--color-tinta);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+}
+
+.cv-lista li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--color-sello);
+}
+
+.cv-nota {
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+    line-height: 1.55;
+    color: var(--color-tinta-suave);
+    background: rgba(128, 0, 0, 0.05);
+    border-left: 3px solid var(--color-sello);
+    padding: 0.7em 0.9em;
+    margin-top: 1em;
+}
+
+.cv-nota b {
+    color: var(--color-tinta);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* --- Etiquetas de aptitudes --- */
+.cv-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    list-style: none;
+    margin-top: 0.4em;
+}
+
+.cv-chips li {
+    font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+    letter-spacing: 0.03em;
+    border: 1px solid #444;
+    background: rgba(255, 255, 255, 0.45);
+    padding: 0.25em 0.75em;
+}
+
+
+/* --- Bloque de logros --- */
+.cv-logro {
+    display: flex;
+    gap: 0.7em;
+    font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+    line-height: 1.55;
+    margin-bottom: 0.9em;
+}
+
+.cv-logro::before {
+    content: "★";
+    color: var(--color-sello);
+    flex-shrink: 0;
+}
+
+/* --- Idiomas --- */
+.cv-idiomas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em;
+    list-style: none;
+    font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+    margin-top: 0.4em;
+}
+
+.cv-idiomas li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.cv-idiomas li::before {
+    content: "»";
+    color: var(--color-sello);
+
+}
